@@ -182,7 +182,7 @@ class StartWorkermanGatewayCommand extends Command implements SignalableCommandI
      * @param  int  $signal
      * @return void
      */
-    public function handleSignal(int $signal): void
+    public function handleSignal(int $signal, int|false $previousExitCode = 0): int|false
     {
         /** @var ServerProcessInspector $inspector */
         $inspector = app(ServerProcessInspector::class);
@@ -193,9 +193,10 @@ class StartWorkermanGatewayCommand extends Command implements SignalableCommandI
 
         if ($signal === SIGHUP) {
             $this->serverReload($inspector);
-            return;
+            return $previousExitCode;
         }
 
         $this->serverStop($inspector);
+        return $previousExitCode;
     }
 }
